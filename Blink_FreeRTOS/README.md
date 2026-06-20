@@ -1,4 +1,4 @@
-# Laboratório 01: Blink com FreeRTOS Task (ESP-IDF)
+# Blink com FreeRTOS Task (ESP-IDF)
 
 Este módulo apresenta a implementação prática de uma aplicação de piscar de LED (Blink) utilizando os conceitos do sistema operacional de tempo real FreeRTOS nativo do framework ESP-IDF, em execução na plataforma ESP32 DevKit V1. O objetivo principal consiste em substituir a abordagem tradicional de loops bloqueantes sequenciais por uma estrutura profissional baseada no gerenciamento assíncrono de tarefas (tasks).
 
@@ -13,4 +13,3 @@ A tarefa `vTaskBlinkLED` assume o controle contínuo do periférico configurado 
 Para fins de monitoramento profissional em sistemas embarcados, este projeto substitui a chamada genérica de impressões síncronas de texto pela macro de rastreamento oficial `ESP_LOGI`. A biblioteca `esp_log.h` fornece uma estrutura que indexa rótulos de tempo (timestamps em milissegundos) e tags identificadoras ao terminal de depuração. Esta configuração permite analisar o comportamento assíncrono e a alternância de estados lógicos do pino com precisão de hardware através do monitoramento serial.
 
 ## Resultados do Monitor Serial
-
