@@ -13,4 +13,4 @@ A tarefa `vTaskBlinkLED` assume o controle contínuo do periférico configurado 
 Para fins de monitoramento profissional em sistemas embarcados, este projeto substitui a chamada genérica de impressões síncronas de texto pela macro de rastreamento oficial `ESP_LOGI`. A biblioteca `esp_log.h` fornece uma estrutura que indexa rótulos de tempo (timestamps em milissegundos) e tags identificadoras ao terminal de depuração. Esta configuração permite analisar o comportamento assíncrono e a alternância de estados lógicos do pino com precisão de hardware através do monitoramento serial.
 
 ## Resultados do Monitor Serial
-![Logs do Monitor Serial](provaSemana1.png)
+![Logs do Monitor Serial](provaProjeto1.png)

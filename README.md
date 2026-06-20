@@ -19,6 +19,7 @@ Para a automação de compilação e gerenciamento de build, são utilizadas as 
 A estrutura de diretórios do repositório está organizada da seguinte forma:
 
 * **`Blink_FreeRTOS/`**: Primeiro projeto prático focado na criação de Tasks explícitas no FreeRTOS para controle de GPIOs e alternância de estados de LEDs, com monitoramento de logs via UART.
+* **`Botao_e_Potenciometro/`**: Implementação assíncrona utilizando Rotinas de Serviço de Interrupção (ISR) em memória RAM (IRAM_ATTR) integradas a Filas (Queue) do FreeRTOS para controle de LED, em conjunto com a leitura periódica de sinais analógicos via driver ADC One-Shot.
 * *(Novos projetos serão adicionados nesta raiz seguindo o mesmo padrão de encapsulamento).*
 
 ---
