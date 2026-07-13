@@ -1,0 +1,15 @@
+menu "Configuracao WiFi do Projeto"
+
+    config WIFI_SSID
+        string "WiFi SSID"
+        default "minha_rede"
+        help
+            Nome da rede WiFi (2.4GHz).
+
+    config WIFI_PASSWORD
+        string "WiFi Password"
+        default "minha_senha"
+        help
+            Senha da rede WiFi.
+
+endmenu
