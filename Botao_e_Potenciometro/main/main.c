@@ -12,7 +12,7 @@ static const char *TAG = "MAIN_APP";
 // Definições de Hardware
 #define PIN_LED          2   // D2 (GPIO 2)
 #define PIN_BOTAO        15  // D15 (GPIO 15)
-#define ADC_POT_CHANNEL  ADC_CHANNEL_6 // D34 corresponde exatamente ao canal ADC1_CH6
+#define ADC_POT_CHANNEL  ADC_CHANNEL_0 // Refere-se à GPIO 4 (ADC2_CH0)
 
 // Handlers do FreeRTOS
 static QueueHandle_t xBotaoQueue = NULL;
@@ -57,26 +57,26 @@ void vTaskTrataBotao(void *pvParameters) {
 
 // Task responsável por ler periodicamente o Potenciômetro via ADC
 void vTaskLeituraPotenciometro(void *pvParameters) {
-    // Configuração do ADC1 (Ajustado para sintaxe do ESP-IDF v6.x)
-    adc_oneshot_unit_handle_t adc1_handle;
-    adc_oneshot_unit_init_cfg_t init_config1 = {
-        .unit_id = ADC_UNIT_1,
+    // Configuração do ADC2 (Ajustado para sintaxe do ESP-IDF v6.x)
+    adc_oneshot_unit_handle_t adc2_handle;
+    adc_oneshot_unit_init_cfg_t init_config2 = {
+        .unit_id = ADC_UNIT_2,
     };
-    ESP_ERROR_CHECK(adc_oneshot_new_unit(&init_config1, &adc1_handle));
+    ESP_ERROR_CHECK(adc_oneshot_new_unit(&init_config2, &adc2_handle));
 
     // Configuração do canal específico do ADC (Ajustado para sintaxe do ESP-IDF v6.x)
     adc_oneshot_chan_cfg_t config = {
         .bitwidth = ADC_BITWIDTH_12, 
         .atten = ADC_ATTEN_DB_12,     
     };
-    ESP_ERROR_CHECK(adc_oneshot_config_channel(adc1_handle, ADC_POT_CHANNEL, &config));
+    ESP_ERROR_CHECK(adc_oneshot_config_channel(adc2_handle, ADC_POT_CHANNEL, &config));
 
     int valor_adc = 0;
     ESP_LOGI(TAG, "Task do potenciometro iniciada.");
 
     while (1) {
         // Realiza a leitura crua (raw) do canal analógico
-        ESP_ERROR_CHECK(adc_oneshot_read(adc1_handle, ADC_POT_CHANNEL, &valor_adc));
+        ESP_ERROR_CHECK(adc_oneshot_read(adc2_handle, ADC_POT_CHANNEL, &valor_adc));
         
         // Exibe o valor no monitor serial
         ESP_LOGI(TAG, "Valor do Potenciometro (ADC Raw): %d", valor_adc);
