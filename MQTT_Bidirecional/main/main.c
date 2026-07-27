@@ -33,6 +33,10 @@ static const char *TAG = "MAIN";
 #define PIR_PIN          GPIO_NUM_34   // GPIO34 (PIR) - somente entrada, nao e strapping
 #define OLED_SDA_PIN     GPIO_NUM_21   // GPIO21 (OLED SDA)
 #define OLED_SCL_PIN     GPIO_NUM_22   // GPIO22 (OLED SCL)
+#define LED_PIN          GPIO_NUM_2    // GPIO2 (LED controlado via MQTT)
+
+#define TOPICO_COMANDO   "casa/sala/led/set"     // recebe ON/OFF
+#define TOPICO_ESTADO    "casa/sala/led/estado"  // publica o estado atual
 
 // ==========================================
 // Referência ao certificado embutido e handle do MQTT 
@@ -68,9 +72,11 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base,
 
     switch ((esp_mqtt_event_id_t)event_id) {
         case MQTT_EVENT_CONNECTED:
-            // Broker aceitou a conexão
             ESP_LOGI(TAG, "MQTT conectado ao broker!");
             mqtt_conectado = true;
+            // Assina o tópico de comando para receber ON/OFF
+            esp_mqtt_client_subscribe(mqtt_client, TOPICO_COMANDO, 1);
+            ESP_LOGI(TAG, "Inscrito no topico: %s", TOPICO_COMANDO);
             break;
         case MQTT_EVENT_DISCONNECTED:
             // Perda de conexão com o broker
@@ -81,6 +87,25 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base,
             // Evento genérico de erro — investigar logs
             ESP_LOGE(TAG, "MQTT erro.");
             break;
+        case MQTT_EVENT_DATA:
+        // Chegou uma mensagem num tópico que assinamos.
+        // event->topic e event->data NÃO são terminados em '\0',
+        // por isso usamos os campos de tamanho (topic_len, data_len).
+        ESP_LOGI(TAG, "Comando recebido: %.*s", event->data_len, event->data);
+
+        // Compara o conteúdo recebido com "ON" ou "OFF"
+        if (strncmp(event->data, "ON", event->data_len) == 0) {
+            gpio_set_level(LED_PIN, 1);   // acende o LED
+            ESP_LOGI(TAG, "LED ligado.");
+            // Confirma o estado de volta (retained = 1)
+            esp_mqtt_client_publish(mqtt_client, TOPICO_ESTADO, "ON", 0, 1, 1);
+        }
+        else if (strncmp(event->data, "OFF", event->data_len) == 0) {
+            gpio_set_level(LED_PIN, 0);   // apaga o LED
+            ESP_LOGI(TAG, "LED desligado.");
+            esp_mqtt_client_publish(mqtt_client, TOPICO_ESTADO, "OFF", 0, 1, 1);
+        }
+        break;
         default:
             break;
     }
@@ -315,6 +340,16 @@ void wifi_init_sta(void) {
 // ==========================================
 void app_main(void) {
     ESP_LOGI(TAG, "Inicializando Firmware Simplificado - Versão v0.1");
+    // Configura o pino do LED como saída digital
+    gpio_config_t led_conf = {
+        .pin_bit_mask = (1ULL << LED_PIN),
+        .mode = GPIO_MODE_OUTPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = GPIO_INTR_DISABLE
+    };
+    gpio_config(&led_conf);
+    gpio_set_level(LED_PIN, 0);   // começa apagado
     
     // 1. Inicializa o NVS (necessário para armazenar credenciais WiFi, entre outros)
     esp_err_t ret = nvs_flash_init();
