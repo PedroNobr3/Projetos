@@ -88,9 +88,8 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base,
             ESP_LOGE(TAG, "MQTT erro.");
             break;
         case MQTT_EVENT_DATA:
-        // Chegou uma mensagem num tópico que assinamos.
+        // Chegou uma mensagem num tópico assinando (MQTT_EVENT_DATA)
         // event->topic e event->data NÃO são terminados em '\0',
-        // por isso usamos os campos de tamanho (topic_len, data_len).
         ESP_LOGI(TAG, "Comando recebido: %.*s", event->data_len, event->data);
 
         // Compara o conteúdo recebido com "ON" ou "OFF"
